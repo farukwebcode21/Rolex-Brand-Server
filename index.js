@@ -24,6 +24,7 @@ async function run() {
     const watchCollection = database.collection("watches");
     const userCollection = database.collection("users");
     const reviewCollection = database.collection("reviews");
+    const orderCollection = database.collection("orders");
 
     // GET API
 
@@ -33,11 +34,11 @@ async function run() {
       res.send(watch);
     });
 
-    app.get("reviews", async (req, res) => {
-      const cursor = reviewCollection.find({});
-      const review = await cursor.toArray();
-      res.send(review);
-    });
+    app.get("/orders", async (req, res) => {
+      const cursor = orderCollection.find({});
+      const order = await cursor.toArray();
+      res.send(order);
+    })
 
     // Delete API
     app.delete("/watches/:id", async (req, res) => {
@@ -73,10 +74,17 @@ async function run() {
       res.json(result);
     });
 
+    // Add Review
     app.post("/reviews", async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.json(result);
+    });
+
+    app.get("/reviews", async (req, res) => {
+      const cursor = reviewCollection.find({});
+      const review = await cursor.toArray();
+      res.send(review);
     });
 
     app.post("/users", async (req, res) => {
@@ -85,6 +93,14 @@ async function run() {
       res.json(result);
     });
 
+    // add Order
+    app.post('/orders', async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
+      res.json(result);
+    })
+
+
     app.put("/users/admin", async (req, res) => {
       const user = req.body;
       const filter = { email: user.email };
@@ -92,6 +108,7 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateDoc);
       res.json(result);
     });
+
   } finally {
     // await client.close();
   }
